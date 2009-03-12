@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module>
+<ModulePrefs 
+	title="__MSG_title__"
+	title_url="https://www.google.com/calendar/render"
+	directory_title="__MSG_directorytitle__"
+	description="__MSG_description__"
+	scrolling="false"
+	singleton="false"
+	author="Bernie T."
+	author_email="widgets@leancode.com"
+	author_affiliation="Leancode Inc."
+	author_location="Bellevue, WA"
+	screenshot="http://gcalgadget.googlecode.com/svn/trunk/screenshot.png"
+	thumbnail="http://gcalgadget.googlecode.com/svn/trunk/thumbnail.png"
+	author_photo="http://dayssince.googlecode.com/svn/trunk/author_photo.png"
+	author_aboutme="Software geek and pointy haired boss in one package."
+	author_quote="If it isn't on my calendar, it ain't going to happen"
+	author_link="http://leancode.com/"
+	height="354"
+>
+	<Locale messages="http://gcalgadget.googlecode.com/svn/trunk/ALL_ALL.xml"/>
+	<Require feature="analytics"/>
+	<Require feature="setprefs"/>
+	<Require feature="dynamic-height"/>
+	<Require feature="minimessage" />
+	<Require feature="tabs" />
+</ModulePrefs>
+<UserPref name="calendars" display_name="__MSG_calendars__" datatype="list" default_value="metac2.com_bimdhsgl2p54dqbtrv8mepbth4@group.calendar.google.com"></UserPref>
+<UserPref name="agendaheight" display_name="__MSG_agendaheight__" datatype="string" default_value="170"></UserPref>
+<UserPref name="showmonth" display_name="__MSG_showmonth__" datatype="bool" default_value="true"></UserPref>
+<UserPref name="timezone" 
+     display_name="__MSG_timezone__"
+     datatype="enum"
+     default_value="">
+    <EnumValue value="" display_value=""/>
+	<EnumValue value="Pacific/Midway" display_value="(GMT-11:00) Midway"/>
+	<EnumValue value="Pacific/Honolulu" display_value="(GMT-10:00) Hawaii Time"/>
+	<EnumValue value="Pacific/Marquesas" display_value="(GMT-09:30) Marquesas"/>
+	<EnumValue value="America/Anchorage" display_value="(GMT-09:00) Alaska Time"/>
+	<EnumValue value="America/Los_Angeles" display_value="(GMT-08:00) Pacific Time"/>
+	<EnumValue value="America/Denver" display_value="(GMT-07:00) Mountain Time"/>
+	<EnumValue value="America/Chicago" display_value="(GMT-06:00) Central Time"/>
+	<EnumValue value="America/New_York" display_value="(GMT-05:00) Eastern Time"/>
+	<EnumValue value="America/Caracas" display_value="(GMT-04:30) Caracas"/>
+	<EnumValue value="America/Puerto_Rico" display_value="(GMT-04:00) Puerto Rico"/>
+	<EnumValue value="America/St_Johns" display_value="(GMT-03:30) Newfoundland Time - St. Johns"/>
+	<EnumValue value="America/Argentina/Buenos_Aires" display_value="(GMT-03:00) Buenos Aires"/>
+	<EnumValue value="America/Noronha" display_value="(GMT-02:00) Noronha"/>
+	<EnumValue value="Atlantic/Azores" display_value="(GMT-01:00) Azores"/>
+	<EnumValue value="Etc/GMT" display_value="(GMT+00:00) GMT (no daylight saving)"/>
+	<EnumValue value="Europe/London" display_value="(GMT+00:00) London"/>
+	<EnumValue value="Europe/Zurich" display_value="(GMT+01:00) Zurich"/>
+	<EnumValue value="Africa/Cairo" display_value="(GMT+02:00) Cairo"/>
+	<EnumValue value="Asia/Baghdad" display_value="(GMT+03:00) Baghdad"/>
+	<EnumValue value="Asia/Tehran" display_value="(GMT+03:30) Tehran"/>
+	<EnumValue value="Asia/Dubai" display_value="(GMT+04:00) Dubai"/>
+	<EnumValue value="Asia/Kabul" display_value="(GMT+04:30) Kabul"/>
+	<EnumValue value="Indian/Maldives" display_value="(GMT+05:00) Maldives"/>
+	<EnumValue value="Asia/Calcutta" display_value="(GMT+05:30) India Standard Time"/>
+	<EnumValue value="Asia/Colombo" display_value="(GMT+05:30) Colombo"/>
+	<EnumValue value="Antarctica/Vostok" display_value="(GMT+06:00) Vostok"/>
+	<EnumValue value="Asia/Rangoon" display_value="(GMT+06:30) Rangoon"/>
+	<EnumValue value="Indian/Cocos" display_value="(GMT+06:30) Cocos"/>
+	<EnumValue value="Asia/Bangkok" display_value="(GMT+07:00) Bangkok"/>
+	<EnumValue value="Asia/Hong_Kong" display_value="(GMT+08:00) Hong Kong"/>
+	<EnumValue value="Asia/Seoul" display_value="(GMT+09:00) Seoul"/>
+	<EnumValue value="Australia/Adelaide" display_value="(GMT+09:30) Central Time - Adelaide"/>
+	<EnumValue value="Australia/Darwin" display_value="(GMT+09:30) Central Time - Darwin"/>
+	<EnumValue value="Australia/Sydney" display_value="(GMT+10:00) Eastern Time - Melbourne, Sydney"/>
+	<EnumValue value="Pacific/Guadalcanal" display_value="(GMT+11:00) Guadalcanal"/>
+	<EnumValue value="Pacific/Norfolk" display_value="(GMT+11:30) Norfolk"/>
+	<EnumValue value="Pacific/Fiji" display_value="(GMT+12:00) Fiji"/>
+	<EnumValue value="Pacific/Tongatapu" display_value="(GMT+13:00) Tongatapu"/>
+	<EnumValue value="Pacific/Kiritimati" display_value="(GMT+14:00) Kiritimati"/>
+</UserPref>
+<Content type="html">
+<![CDATA[
+
+<script type="text/javascript" src="http://gcalgadget.googlecode.com/svn/trunk/basiccalendar.js">
+
+/***********************************************
+* Basic Calendar-By Brian Gosselin at http://scriptasylum.com/bgaudiodr/
+* Script featured on Dynamic Drive (http://www.dynamicdrive.com)
+* This notice must stay intact for use
+* Visit http://www.dynamicdrive.com/ for full source code
+***********************************************/
+
+</script>
+
+<script>
+
+// We contain all code in a single javascript global namespace
+// This isn't really necessary if we are running in our own iframe
+// (as non-inlined gadgets are), but it future-proofs the code
+var gcalgadget__MODULE_ID__ = function () {
+
+	// private attributes and  methods
+	var igPrefs;
+	var calendars;
+	var agendaHeight;
+	var calSources;
+	var showmonth;
+	
+	// The default height must match the UserPref default at top of gadget spec
+	var defaultAgendaHeight = 170;
+	
+	function parseCalendars(rawCals) {
+		var cals = new Array();
+		var regexp = /[^&\/=]+[(%40)|@]+[^&\/=]+/;
+		var match;
+		
+		for (var i=0; i < rawCals.length; i++) {	
+			match = regexp.exec(rawCals[i]);
+		
+			if (match == null) {
+				cals.push(rawCals[i]);
+			} else {
+				cals.push(match[0]);
+			}
+		}
+		
+		return cals;
+	}
+	
+	function getsources() {
+		var rawCalendars = igPrefs.getArray("calendars");
+		var calendars = parseCalendars(rawCalendars);
+		
+		var srcs = new Array();
+		var color_list = new Array("%232952A3", "%23528800", "%235229A3", "%234A716C", "%23A32929",  
+			"%238D6F47", "%237A367A", "%2328754E", "%231B887A", "%23B1365F", "%235A6986");
+		
+		for (var i=0; i < calendars.length; i++) {
+			srcs.push('&amp;src=' + calendars[i] + '&amp;color=' + color_list[(i % 11)]);
+		}
+		
+		return srcs.join("");
+	}
+	
+	function refreshAgenda() {
+		var showmonth = igPrefs.getBool("showmonth");
+		var timezone = igPrefs.getString("timezone");
+		var height = agendaHeight;
+		var tzoptions = "";
+		
+		if (timezone.length > 0) {
+			tzoptions = '&ctz=' + timezone
+		}
+	
+		// add 20 to height to clip off Add To Google button
+		var html = '<div style="overflow:hidden; margin: 0 auto; width: 100%;' 
+			+ 'height:' + height + '">'
+			+ '<iframe src="http://www.google.com/calendar/embed'
+			+ '?showTitle=0&showNav=0&showDate=0&showTabs=0&showCalendars=0&showCurrentTime=0'
+			+ '&height=' + (height+0) + '&mode=AGENDA' + calSources
+			+ tzoptions
+			+ '" style="border-width:0; margin:0; padding:0" width="100%" height="' + (height+0)  + '"'
+			+ 'frameborder="0" scrolling="no"></iframe></div>';
+	
+		_gel("agendaframe__MODULE_ID__").innerHTML = html;
+	
+	}
+	
+	function refreshMonth() {
+		
+		if (showmonth) {
+			var todaydate=new Date();
+			var curmonth=todaydate.getMonth()+1; //get current month (1-12)
+			var curyear=todaydate.getFullYear(); //get current year
+			
+			_gel("monthly__MODULE_ID__").innerHTML = buildCal(curmonth ,curyear, "main", "month", "daysofweek", "days", 1);
+			_gel("monthly__MODULE_ID__").style.display = "block";
+		}
+		
+	}
+	
+	function refreshAll() {
+		
+		refreshMonth();
+		refreshAgenda();
+		
+		// We use the fixed, pre-specified height when possible
+		// because Google's AdjustIFrameHeight function has bugs.
+		// For example, when the page is refreshed, the gadget's
+		// height grows unnecessarily, adding whitespace at the 
+		// bottom each time.
+		if ((agendaHeight != defaultAgendaHeight) || (!(showmonth))) {
+			_IG_AdjustIFrameHeight();
+		}
+	}
+	
+	// return the "public" attributes and method closures of our object
+	
+	return {
+		onLoad : function() {
+			igPrefs = new _IG_Prefs(__MODULE_ID__);
+			showmonth = igPrefs.getBool("showmonth");
+			agendaHeight = parseInt(igPrefs.getString("agendaheight"));
+
+			if (!(agendaHeight > 0)) {
+				agendaHeight = defaultAgendaHeight;
+			}
+			
+			calSources = getsources();
+			
+			refreshAll();
+		},
+		
+		backToToday : function() {
+			refreshAgenda();
+			return false;
+		},
+		
+		refreshPermissions : function() {
+			setTimeout('window.location.reload(true)',5000)
+			return true;
+		}
+	};
+}();
+
+_IG_RegisterOnloadHandler(gcalgadget__MODULE_ID__.onLoad);
+_IG_Analytics("UA-99119-16", "/gcalgadget");
+	
+</script>
+
+<style type="text/css">
+	
+	html, body, div, span, applet, object, iframe,
+	h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+	a, abbr, acronym, address, big, cite, code,
+	del, dfn, em, font, img, ins, kbd, q, s, samp,
+	small, strike, strong, sub, sup, tt, var,
+	dl, dt, dd, ol, ul, li,
+	fieldset, form, label, legend,
+	table, caption, tbody, tfoot, thead, tr, th, td {
+		margin: 0;
+		padding: 0;
+		outline: 0;
+		font-weight: inherit;
+		font-style: inherit;
+		font-size: 100%;
+		font-family: inherit;
+		vertical-align: baseline;
+	}
+	/* remember to define focus styles! */
+	:focus {
+		outline: 0;
+	}
+	body {
+		line-height: 1;
+		color: black;
+		background: white;
+	}
+	ol, ul {
+		list-style: none;
+	}
+	/* tables still need 'cellspacing="0"' in the markup */
+	table {
+		border-collapse: separate;
+		border-spacing: 0;
+	}
+	caption, th, td {
+		text-align: center;
+		font-weight: normal;
+	}
+	blockquote:before, blockquote:after,
+	q:before, q:after {
+		content: "";
+	}
+	blockquote, q {
+		quotes: "" "";
+	}
+
+.main {
+width:200px;
+border:1px solid lightblue;
+margin: 0; padding: 0;
+}
+
+.month {
+background-color: lightblue;
+font:bold 12px verdana;
+color:black;
+}
+
+.daysofweek {
+background-color:gray;
+font:bold 12px verdana;
+color:white;
+}
+
+.days {
+font-size: 12px;
+font-family:verdana;
+color:black;
+background-color: lightred;
+padding: 2px;
+}
+
+#today {
+font-weight: bold;
+background-color: #008000;
+color: white;
+}
+
+</style>
+
+<div id="calframe__MODULE_ID__" style="text-align:center; margin: 0; padding: 0">
+	<div id="monthly__MODULE_ID__" style="display:none; margin: 0 auto; padding: 5 0 0 0; width: 200px; text-align:center; height: 165px">
+	</div>
+	<div style="height:15px; vertical-align:middle; margin 2 auto; font-size:12px">
+		<a href="" onClick="javascript:return gcalgadget__MODULE_ID__.backToToday()">__MSG_today__</a> | 
+		<a href="https://www.google.com/calendar/render" target="_blank" onClick="javascript:return gcalgadget__MODULE_ID__.refreshPermissions()">__MSG_fullpage__</a> | 
+		<a href="http://leancode.com/gcalgadget/" target="_blank">__MSG_help__</a>
+	</div>
+	<div id="agendaframe__MODULE_ID__">
+		__MSG_loading__
+	</div>
+</div>
+
+]]>
+</Content>
+</Module>
+
